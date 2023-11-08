@@ -1,0 +1,2453 @@
+{
+	"info": {
+		"_postman_id": "f326a2a8-4575-4d11-ba91-9f62ffc12f70",
+		"name": "Secure Access by Duo Impact Lab",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User and Phone",
+			"item": [
+				{
+					"name": "Create a User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0fca3f2f-3b07-4797-bea0-dd1aad0bb6b0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6d910dbc-aebd-497a-b295-672ef00ddc92",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);",
+									"var username = pm.collectionVariables.get('username')",
+									"pm.collectionVariables.set('user_id', response['response']['user_id'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "befcf815-25e0-4295-a5a1-4b46d13677d3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "<<ADD USERNAME HERE>>",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://{{api_hostname}}/admin/v1/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "08f1c1fd-ba24-46c8-b906-010902634822",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f72f2ad9-bebc-4c07-b846-ee9c0b2283b6",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "d296251c-8026-4857-b52c-f167f45b56a3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "",
+									"description": "The maximum number of records returned in a paged set of results.\n\nEach endpoint that supports paged results has its own limit settings, specified like \"Default: 100; Max: 300\".\n\nIf a request specifies a value greater than the endpoint's maximum limit, max value is used.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "",
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "08f1c1fd-ba24-46c8-b906-010902634822",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f72f2ad9-bebc-4c07-b846-ee9c0b2283b6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "6ed38833-e403-43e8-8a65-83103dbb25d0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "",
+									"description": "The maximum number of records returned in a paged set of results.\n\nEach endpoint that supports paged results has its own limit settings, specified like \"Default: 100; Max: 300\".\n\nIf a request specifies a value greater than the endpoint's maximum limit, max value is used.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "",
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Phone",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c2d94a0d-1ba1-4aca-9ff0-09615b679f2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "605a14f3-7594-4d4c-9936-c8e9f700d890",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "number",
+									"value": "<<ADD PHONE NUMBER HERE>>",
+									"type": "text"
+								},
+								{
+									"key": "platform",
+									"value": "apple ios",
+									"description": "If android replace with google android",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://{{api_hostname}}/admin/v1/phones"
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve All Phones",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0b633fdd-f797-4d5e-bb8c-ba6b0d006c2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7188b37-a721-4287-a3ff-d7a76f7412db",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);",
+									"pm.collectionVariables.set('phone_id', response['response'][0]['phone_id'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "624d425e-d6c8-43e4-8a9d-a6bac13a0961",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/phones",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"phones"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"description": "The maximum number of records returned.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.\n\nDefault: 0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Phone with User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2dc535ff-526b-4d5a-b859-5bb12d8a2c72",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "cf5d1e72-90a0-4566-8347-3fa12cec51f6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "phone_id",
+									"value": "{{phone_id}}",
+									"description": "Replace variable with phone ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/phones",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"phones"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Activation Code",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "046ef8cc-9b28-4b2a-9880-95b1ef592c23",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "925d8dfd-90fb-465e-8af7-5fd2ed14557c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/phones/:phone_id/activation_url",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"phones",
+								":phone_id",
+								"activation_url"
+							],
+							"variable": [
+								{
+									"key": "phone_id",
+									"value": "{{phone_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Activation Code via SMS",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "01080bbf-dfba-41ba-b414-a91473a6355d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f0603ae3-869e-4ecd-af13-650f71428fe6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/phones/:phone_id/send_sms_activation",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"phones",
+								":phone_id",
+								"send_sms_activation"
+							],
+							"variable": [
+								{
+									"key": "phone_id",
+									"value": "{{phone_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "a5ee6380-10b8-42d2-876c-79959ee60359",
+			"auth": {
+				"type": "basic",
+				"basic": {
+					"password": "{{admin_hmac_key}}",
+					"username": "{{admin_ikey}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "eab58398-35bf-44fa-846b-fd2852333633",
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"const pc = require('postman-collection');",
+							"const currentDate= require('moment');",
+							"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+							"pm.collectionVariables.set(\"date\", DATE)",
+							"",
+							"// Collect Collection & Updates Variables",
+							"var url = request.url;",
+							"while(url.indexOf('{{') >= 0) {",
+							"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+							"var variableValue= pm.collectionVariables.get(variableName);",
+							"url = url.replace('{{'+variableName+'}}', variableValue);",
+							"}",
+							"console.log(url)",
+							"var METHOD = request.method;",
+							"",
+							"var URL_OBJECT = new pc.Url(url);",
+							"",
+							"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+							"//postman-collection's URL object will just give you the variable name.",
+							"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+							"",
+							"var PATH = URL_OBJECT.getPath();",
+							"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+							"    var QUERY = URL_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"} else {",
+							"    if (pm.request.body.toString().length > 1) {",
+							"    var BODY_OBJECT = new pc.Url(request.url + '?' + encodeURI(pm.request.body.toString()));",
+							"    } else {",
+							"        var BODY_OBJECT = new pc.Url(request.url);",
+							"    }",
+							"    var QUERY = BODY_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"    var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c0e3bbb8-e16b-448d-ad82-e0ff50b0caf3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Auth API Integration",
+			"item": [
+				{
+					"name": "Retrieve Integrations",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c27fad8a-648c-4756-8284-3b240b9df08d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "01ceafca-8eb4-4841-99fd-18a78a289d77",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/integrations?limit=10&offset=0",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"integrations"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "The maximum number of records returned."
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.\n\nDefault: 0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Auth API",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d6cab156-6ee3-462e-a3b3-a6757b241857",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ff08097-65e1-45a9-8f98-52d9b0032f5b",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);",
+									"pm.collectionVariables.set('auth_ikey', response['response']['integration_key'])",
+									"pm.collectionVariables.set('auth_skey', response['response']['secret_key'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "9617774e-e84e-48b3-bf83-d41aa4f0468d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Impact",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "authapi",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://{{api_hostname}}/admin/v1/integrations"
+					},
+					"response": []
+				}
+			],
+			"id": "f914ea79-8ee7-4065-9298-7fcc66e2e28b",
+			"auth": {
+				"type": "basic",
+				"basic": {
+					"password": "{{admin_hmac_key}}",
+					"username": "{{admin_ikey}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "84400856-89a7-4ec6-957d-fbc395a94f27",
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"const pc = require('postman-collection');",
+							"const currentDate= require('moment');",
+							"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+							"pm.collectionVariables.set(\"date\", DATE)",
+							"",
+							"// Collect Collection & Updates Variables",
+							"var url = request.url;",
+							"while(url.indexOf('{{') >= 0) {",
+							"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+							"var variableValue= pm.collectionVariables.get(variableName);",
+							"url = url.replace('{{'+variableName+'}}', variableValue);",
+							"}",
+							"console.log(url)",
+							"var METHOD = request.method;",
+							"",
+							"var URL_OBJECT = new pc.Url(url);",
+							"",
+							"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+							"//postman-collection's URL object will just give you the variable name.",
+							"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+							"",
+							"var PATH = URL_OBJECT.getPath();",
+							"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+							"    var QUERY = URL_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"} else {",
+							"    if (pm.request.body.toString().length > 1) {",
+							"    var BODY_OBJECT = new pc.Url(request.url + '?' + encodeURI(pm.request.body.toString()));",
+							"    } else {",
+							"        var BODY_OBJECT = new pc.Url(request.url);",
+							"    }",
+							"    var QUERY = BODY_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"    var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cebf8501-5106-464f-97d1-27e86e2d00ee",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User Authentication",
+			"item": [
+				{
+					"name": "Run PreAuth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8a0f7c63-defc-4cc0-8dea-8010ad09ef5b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "1b963270-4aaa-406a-bcba-bffcfdaa6f9f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"type": "text",
+								"value": "{{date}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/auth/v2/preauth?username=<<REPLACE WITH USERNAME>>",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"auth",
+								"v2",
+								"preauth"
+							],
+							"query": [
+								{
+									"key": "ip_addr",
+									"value": "",
+									"description": "The IP address of the user to be authenticated, in dotted quad format. This will cause an \"allow\" response to be sent if appropriate for requests from a trusted network.",
+									"disabled": true
+								},
+								{
+									"key": "user_id",
+									"value": "",
+									"description": "Permanent, unique identifier for the user as generated by Duo upon user creation (e.g. DUYHV6TJBC3O4RITS1WC).\n\nExactly one of user_id and username must be specified.",
+									"disabled": true
+								},
+								{
+									"key": "trusted_device_token",
+									"value": "",
+									"description": "If the trusted_device_token is present and the Remembered Devices option is enabled in the Duo Admin Panel, return an \"allow\" response for the period of time a device may be remembered as set by the Duo administrator.",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "<<REPLACE WITH USERNAME>>"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run Auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cfd9a375-a239-4207-8b0a-06e30b402f90",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "733113f7-5e13-4d13-94df-01c7ea6b625e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"type": "text",
+								"value": "{{date}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/auth/v2/auth?device=auto&factor=push&username=<<REPLACE WITH USERNAME>>",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"auth",
+								"v2",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "device",
+									"value": "auto"
+								},
+								{
+									"key": "factor",
+									"value": "push"
+								},
+								{
+									"key": "username",
+									"value": "<<REPLACE WITH USERNAME>>"
+								}
+							]
+						},
+						"description": "This is an example of a manual, synchronous push to a user (\"example.user\") with custom headers, context and fields. This functionality has potential to be used in a lot of different cases when it comes to verifying behaviour: not just log-ins!"
+					},
+					"response": []
+				}
+			],
+			"id": "2ba7461b-631b-48cb-a986-cf3f9be7722c",
+			"auth": {
+				"type": "basic",
+				"basic": {
+					"password": "{{auth_hmac_key}}",
+					"username": "{{auth_ikey}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "509c359f-e31a-4a3e-a2d1-19346874dddc",
+						"type": "text/javascript",
+						"exec": [
+							"let pc = require('postman-collection');",
+							"let cryptoJS = require('crypto-js');",
+							"let moment = require('moment');",
+							"",
+							"let DATE = (moment().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\"));",
+							"pm.collectionVariables.set(\"date\", DATE)",
+							"",
+							"let METHOD = request.method;",
+							"",
+							"let URL_OBJECT = new pc.Url(request.url);",
+							"",
+							"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+							"//postman-collection's URL object will just give you the variable name.",
+							"let HOST = pm.collectionVariables.get(\"api_hostname\")",
+							"",
+							"let PATH = URL_OBJECT.getPath();",
+							"let QUERY = URL_OBJECT.getQueryString();",
+							"",
+							"let HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY",
+							"",
+							"console.log(HMAC_STRING)",
+							"",
+							"let HMACd = cryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"auth_skey\")).toString();",
+							"",
+							"pm.collectionVariables.set(\"auth_hmac_key\", HMACd)"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c1f037c5-bbda-489a-801b-dc0681c0fa2f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Groups",
+			"item": [
+				{
+					"name": "Retrieve Groups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "33ed84f7-e250-4542-a809-0c20db95efe3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/groups",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": null,
+									"description": "The maximum number of records returned.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": null,
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.\n\nDefault: 0",
+									"disabled": true
+								},
+								{
+									"key": "group_ids",
+									"value": null,
+									"description": "Retrieve specific groups by specifying up to 200 group_ids values.\n\nList format: group_ids=DGAAAAAAAAAAAAAAAAAA&group_ids=DGBBBBBBBBBBBBBBBBBBB&...etc.\n\nIgnores other paging parameters when used.",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Trusted Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d70271bd-3ca7-4aca-a605-4eb2897ee961",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0dd5b559-5a23-401b-a153-b4c117a7ef0d",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);",
+									"pm.collectionVariables.set('trusted_group_id', response['response']['group_id'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "9462683c-508a-4161-bd0d-dc4a00ac42f1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Trusted",
+									"description": "Required - The name of the group.",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "Active",
+									"description": "Optional - The authentication status of the group. See Retrieve Groups for a list of possible values.",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://{{api_hostname}}/admin/v1/groups"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Blocked Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d70271bd-3ca7-4aca-a605-4eb2897ee961",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ffb29085-8ddf-4b7a-8c46-13ca187bba02",
+								"exec": [
+									"let response=pm.response.json();",
+									"console.log(response);",
+									"pm.collectionVariables.set('blocked_group_id', response['response']['group_id'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "2ba1729f-5076-45b4-86ac-b3ce46e3af10",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Blocked",
+									"description": "Required - The name of the group.",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "Disabled",
+									"description": "Optional - The authentication status of the group. See Retrieve Groups for a list of possible values.",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://{{api_hostname}}/admin/v1/groups"
+					},
+					"response": []
+				},
+				{
+					"name": "Check New Groups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "aa6b441e-e506-4f2b-91fc-d703bcf8fbc9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/groups",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": null,
+									"description": "The maximum number of records returned.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": null,
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.\n\nDefault: 0",
+									"disabled": true
+								},
+								{
+									"key": "group_ids",
+									"value": null,
+									"description": "Retrieve specific groups by specifying up to 200 group_ids values.\n\nList format: group_ids=DGAAAAAAAAAAAAAAAAAA&group_ids=DGBBBBBBBBBBBBBBBBBBB&...etc.\n\nIgnores other paging parameters when used.",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "416edc85-4e7b-4ce4-afb6-a1d16842d5c5",
+			"auth": {
+				"type": "basic",
+				"basic": {
+					"password": "{{admin_hmac_key}}",
+					"username": "{{admin_ikey}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8f1b4d95-8a13-4cd1-9a77-15e7834d961c",
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"const pc = require('postman-collection');",
+							"const currentDate= require('moment');",
+							"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+							"pm.collectionVariables.set(\"date\", DATE)",
+							"",
+							"// Collect Collection & Updates Variables",
+							"var url = request.url;",
+							"while(url.indexOf('{{') >= 0) {",
+							"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+							"var variableValue= pm.collectionVariables.get(variableName);",
+							"url = url.replace('{{'+variableName+'}}', variableValue);",
+							"}",
+							"console.log(url)",
+							"var METHOD = request.method;",
+							"",
+							"var URL_OBJECT = new pc.Url(url);",
+							"",
+							"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+							"//postman-collection's URL object will just give you the variable name.",
+							"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+							"",
+							"var PATH = URL_OBJECT.getPath();",
+							"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+							"    var QUERY = URL_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"} else {",
+							"    var BODY_OBJECT = new pc.Url(request.url + '?' + pm.request.body.toString());",
+							"    var QUERY = BODY_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"    var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "75b11aad-b1ae-4891-a4e4-afeb3e88abe5",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Modify User",
+			"item": [
+				{
+					"name": "Retrieve User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "324e9eca-8576-45a6-bc8f-d0ecc37ab3bb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "",
+									"description": "The maximum number of records returned.",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "",
+									"description": "The offset from 0 at which to start record retrieval.\n\nWhen used with \"limit\", the handler will return \"limit\" records starting at the n-th record, where n is the offset.\n\nDefault: 0",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User to Trusted Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									"",
+									"const pc = require('postman-collection');",
+									"const currentDate= require('moment');",
+									"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+									"pm.collectionVariables.set(\"date\", DATE)",
+									"",
+									"// Collect Collection & Updates Variables",
+									"var url = request.url;",
+									"while(url.indexOf('{{') >= 0) {",
+									"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+									"var variableValue= pm.collectionVariables.get(variableName);",
+									"url = url.replace('{{'+variableName+'}}', variableValue);",
+									"}",
+									"console.log(url)",
+									"var METHOD = request.method;",
+									"",
+									"var URL_OBJECT = new pc.Url(url);",
+									"",
+									"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+									"//postman-collection's URL object will just give you the variable name.",
+									"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+									"",
+									"var PATH = URL_OBJECT.getPath();",
+									"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+									"    var QUERY = URL_OBJECT.getQueryString();",
+									"    console.log(QUERY)",
+									"    if(QUERY == null) {",
+									"        QUERY = ''",
+									"    }",
+									"var HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY     ",
+									"    console.log(HMAC_STRING)",
+									"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+									"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+									"} else {",
+									"    if (pm.request.body.toString() != '') {",
+									"        var BODY_OBJECT = new pc.Url(request.url + '?' + pm.request.body.toString());",
+									"    } else {",
+									"        var BODY_OBJECT = new pc.Url(request.url)",
+									"    }",
+									"    var QUERY = BODY_OBJECT.getQueryString();",
+									"    console.log(QUERY)",
+									"    if(QUERY == null) {",
+									"        QUERY = ''",
+									"    }",
+									"    var HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY     ",
+									"    console.log(HMAC_STRING)",
+									"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+									"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "63449c8b-7cfa-45c8-8849-933f18cfaaad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups?group_id={{trusted_group_id}}",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "group_id",
+									"value": "{{trusted_group_id}}",
+									"description": "The ID of the group to associate with the user."
+								}
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Groups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									"",
+									"const pc = require('postman-collection');",
+									"const currentDate= require('moment');",
+									"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+									"pm.collectionVariables.set(\"date\", DATE)",
+									"",
+									"// Collect Collection & Updates Variables",
+									"var url = request.url;",
+									"while(url.indexOf('{{') >= 0) {",
+									"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+									"var variableValue= pm.collectionVariables.get(variableName);",
+									"url = url.replace('{{'+variableName+'}}', variableValue);",
+									"}",
+									"console.log(url)",
+									"var METHOD = request.method;",
+									"",
+									"var URL_OBJECT = new pc.Url(url);",
+									"",
+									"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+									"//postman-collection's URL object will just give you the variable name.",
+									"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+									"",
+									"var PATH = URL_OBJECT.getPath();",
+									"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+									"    var QUERY = URL_OBJECT.getQueryString();",
+									"    console.log(QUERY)",
+									"    if(QUERY == null) {",
+									"        QUERY = ''",
+									"    }",
+									"var HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY     ",
+									"    console.log(HMAC_STRING)",
+									"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+									"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+									"} else {",
+									"    if (pm.request.body.toString() != '') {",
+									"        var BODY_OBJECT = new pc.Url(request.url + '?' + pm.request.body.toString());",
+									"    } else {",
+									"        var BODY_OBJECT = new pc.Url(request.url)",
+									"    }",
+									"    var QUERY = BODY_OBJECT.getQueryString();",
+									"    console.log(QUERY)",
+									"    if(QUERY == null) {",
+									"        QUERY = ''",
+									"    }",
+									"    var HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY     ",
+									"    console.log(HMAC_STRING)",
+									"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+									"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f415ecf3-e0a4-4793-b999-a0591eb4394a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups"
+							],
+							"variable": [
+								{
+									"id": "5def6a00-b7b4-413c-871d-923fa545102f",
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate User In Trusted Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cfd9a375-a239-4207-8b0a-06e30b402f90",
+								"exec": [
+									"let pc = require('postman-collection');",
+									"let cryptoJS = require('crypto-js');",
+									"let moment = require('moment');",
+									"",
+									"let DATE = (moment().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\"));",
+									"pm.collectionVariables.set(\"date\", DATE)",
+									"",
+									"let METHOD = request.method;",
+									"",
+									"let URL_OBJECT = new pc.Url(request.url);",
+									"",
+									"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+									"//postman-collection's URL object will just give you the variable name.",
+									"let HOST = pm.collectionVariables.get(\"api_hostname\")",
+									"",
+									"let PATH = URL_OBJECT.getPath();",
+									"let QUERY = URL_OBJECT.getQueryString();",
+									"",
+									"let HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY",
+									"",
+									"console.log(HMAC_STRING)",
+									"",
+									"let HMACd = cryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"auth_skey\")).toString();",
+									"",
+									"pm.collectionVariables.set(\"auth_hmac_key\", HMACd)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "de846d5a-5319-4e04-92bf-0aca66d2151a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "{{auth_hmac_key}}",
+								"username": "{{auth_ikey}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"type": "text",
+								"value": "{{date}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/auth/v2/auth?device=auto&factor=push&username=<<REPLACE WITH USERNAME>>",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"auth",
+								"v2",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "device",
+									"value": "auto"
+								},
+								{
+									"key": "factor",
+									"value": "push"
+								},
+								{
+									"key": "username",
+									"value": "<<REPLACE WITH USERNAME>>"
+								}
+							]
+						},
+						"description": "This is an example of a manual, synchronous push to a user (\"example.user\") with custom headers, context and fields. This functionality has potential to be used in a lot of different cases when it comes to verifying behaviour: not just log-ins!"
+					},
+					"response": []
+				},
+				{
+					"name": "Add User to Blocked Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "9332e25a-62e0-4a5b-95de-4a5826198660",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups?group_id={{blocked_group_id}}",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "group_id",
+									"value": "{{blocked_group_id}}",
+									"description": "The ID of the group to associate with the user."
+								}
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Groups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f9532564-577e-4836-a40d-546f26b52990",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups"
+							],
+							"variable": [
+								{
+									"id": "5def6a00-b7b4-413c-871d-923fa545102f",
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate User In Blocked Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cfd9a375-a239-4207-8b0a-06e30b402f90",
+								"exec": [
+									"let pc = require('postman-collection');",
+									"let cryptoJS = require('crypto-js');",
+									"let moment = require('moment');",
+									"",
+									"let DATE = (moment().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\"));",
+									"pm.collectionVariables.set(\"date\", DATE)",
+									"",
+									"let METHOD = request.method;",
+									"",
+									"let URL_OBJECT = new pc.Url(request.url);",
+									"",
+									"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+									"//postman-collection's URL object will just give you the variable name.",
+									"let HOST = pm.collectionVariables.get(\"api_hostname\")",
+									"",
+									"let PATH = URL_OBJECT.getPath();",
+									"let QUERY = URL_OBJECT.getQueryString();",
+									"",
+									"let HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY",
+									"",
+									"console.log(HMAC_STRING)",
+									"",
+									"let HMACd = cryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"auth_skey\")).toString();",
+									"",
+									"pm.collectionVariables.set(\"auth_hmac_key\", HMACd)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "0406725a-21b4-45ca-8e1c-14f215ac9e07",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "{{auth_hmac_key}}",
+								"username": "{{auth_ikey}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"type": "text",
+								"value": "{{date}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/auth/v2/auth?device=auto&factor=push&username=<<REPLACE WITH USERNAME>>",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"auth",
+								"v2",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "device",
+									"value": "auto"
+								},
+								{
+									"key": "factor",
+									"value": "push"
+								},
+								{
+									"key": "username",
+									"value": "<<REPLACE WITH USERNAME>>"
+								}
+							]
+						},
+						"description": "This is an example of a manual, synchronous push to a user (\"example.user\") with custom headers, context and fields. This functionality has potential to be used in a lot of different cases when it comes to verifying behaviour: not just log-ins!"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove User From Blocked Group",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "dca68b6a-8206-475d-97af-a54b3721e081",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups/:group_id",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups",
+								":group_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "group_id",
+									"value": "{{blocked_group_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Groups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "345d5bde-4386-461a-a649-79c3d17e2f16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "b6d32afb-ed32-4b5a-892c-274758c0b03c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "{{date}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://{{api_hostname}}/admin/v1/users/:user_id/groups",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"admin",
+								"v1",
+								"users",
+								":user_id",
+								"groups"
+							],
+							"variable": [
+								{
+									"id": "5def6a00-b7b4-413c-871d-923fa545102f",
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cfd9a375-a239-4207-8b0a-06e30b402f90",
+								"exec": [
+									"let pc = require('postman-collection');",
+									"let cryptoJS = require('crypto-js');",
+									"let moment = require('moment');",
+									"",
+									"let DATE = (moment().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\"));",
+									"pm.collectionVariables.set(\"date\", DATE)",
+									"",
+									"let METHOD = request.method;",
+									"",
+									"let URL_OBJECT = new pc.Url(request.url);",
+									"",
+									"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+									"//postman-collection's URL object will just give you the variable name.",
+									"let HOST = pm.collectionVariables.get(\"api_hostname\")",
+									"",
+									"let PATH = URL_OBJECT.getPath();",
+									"let QUERY = URL_OBJECT.getQueryString();",
+									"",
+									"let HMAC_STRING = DATE + \"\\n\" ",
+									"                + METHOD + \"\\n\" ",
+									"                + HOST + \"\\n\" ",
+									"                + PATH + \"\\n\"",
+									"                + QUERY",
+									"",
+									"console.log(HMAC_STRING)",
+									"",
+									"let HMACd = cryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"auth_skey\")).toString();",
+									"",
+									"pm.collectionVariables.set(\"auth_hmac_key\", HMACd)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "4b2596e7-f838-42cc-9d66-8f1594660a8b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "{{auth_hmac_key}}",
+								"username": "{{auth_ikey}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Date",
+								"type": "text",
+								"value": "{{date}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{api_hostname}}/auth/v2/auth?device=auto&factor=push&username=<<REPLACE WITH USERNAME>>",
+							"protocol": "https",
+							"host": [
+								"{{api_hostname}}"
+							],
+							"path": [
+								"auth",
+								"v2",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "device",
+									"value": "auto"
+								},
+								{
+									"key": "factor",
+									"value": "push"
+								},
+								{
+									"key": "username",
+									"value": "<<REPLACE WITH USERNAME>>"
+								}
+							]
+						},
+						"description": "This is an example of a manual, synchronous push to a user (\"example.user\") with custom headers, context and fields. This functionality has potential to be used in a lot of different cases when it comes to verifying behaviour: not just log-ins!"
+					},
+					"response": []
+				}
+			],
+			"id": "34be8b6c-fdab-46e1-ab0d-0c09f23d7d42",
+			"auth": {
+				"type": "basic",
+				"basic": {
+					"password": "{{admin_hmac_key}}",
+					"username": "{{admin_ikey}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b1e0631e-8bd3-4a0d-99ad-680c45fc8bd2",
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"const pc = require('postman-collection');",
+							"const currentDate= require('moment');",
+							"var DATE = currentDate.utc().format(\"ddd, DD MMM YYYY HH:mm:ss ZZ\");",
+							"pm.collectionVariables.set(\"date\", DATE)",
+							"",
+							"// Collect Collection & Updates Variables",
+							"var url = request.url;",
+							"while(url.indexOf('{{') >= 0) {",
+							"var variableName = url.substring(url.indexOf('{{')+2, url.indexOf('}}'));",
+							"var variableValue= pm.collectionVariables.get(variableName);",
+							"url = url.replace('{{'+variableName+'}}', variableValue);",
+							"}",
+							"console.log(url)",
+							"var METHOD = request.method;",
+							"",
+							"var URL_OBJECT = new pc.Url(url);",
+							"",
+							"//HOST is retrieved from the environment variable itself, since parsing the hostname using",
+							"//postman-collection's URL object will just give you the variable name.",
+							"var HOST = pm.collectionVariables.get(\"api_hostname\")",
+							"",
+							"var PATH = URL_OBJECT.getPath();",
+							"if (pm.request.method == 'GET' || pm.request.method == 'DELETE') {",
+							"    var QUERY = URL_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"} else {",
+							"    if (pm.request.body.toString() != '') {",
+							"        var BODY_OBJECT = new pc.Url(request.url + '?' + pm.request.body.toString());",
+							"    } else {",
+							"        var BODY_OBJECT = new pc.Url(request.url)",
+							"    }",
+							"    var QUERY = BODY_OBJECT.getQueryString();",
+							"    console.log(QUERY)",
+							"    if(QUERY == null) {",
+							"        QUERY = ''",
+							"    }",
+							"    var HMAC_STRING = DATE + \"\\n\" ",
+							"                + METHOD + \"\\n\" ",
+							"                + HOST + \"\\n\" ",
+							"                + PATH + \"\\n\"",
+							"                + QUERY     ",
+							"    console.log(HMAC_STRING)",
+							"var HMACd = CryptoJS.HmacSHA1(HMAC_STRING, pm.collectionVariables.get(\"admin_skey\")).toString();",
+							"pm.collectionVariables.set(\"admin_hmac_key\", HMACd)",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a9d5eeeb-52e1-463a-bdfb-0f852bc07ebf",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "2af4495d-be9a-44f7-9f1b-99eeb23410e6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0ac11eac-cca0-4dc1-9d64-e2360e031410",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "fa17bf14-9de0-4ac5-b68c-50cad0e4cb4d",
+			"key": "api_hostname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "ea6eb19d-aaad-4aa9-8df4-97ea6d354ef4",
+			"key": "admin_ikey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "8e2f19d7-0da7-46c4-accf-b2eed2a3584e",
+			"key": "admin_skey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d74b3e4e-41f8-45ad-b594-2bd3d03055b7",
+			"key": "username",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "5ddffa77-1964-41c5-9e7e-0e1932ebe14d",
+			"key": "auth_ikey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "3c7c8518-08ff-4097-9954-42b89e4b2c3a",
+			"key": "auth_skey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "92040020-b9ce-4641-89fd-b9823f6d36f4",
+			"key": "user_first_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "25c0dc68-d4b6-495c-892a-80454af4bc64",
+			"key": "user_last_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d700fe9d-129e-45c8-b65d-cbc54e965873",
+			"key": "user_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "235b6625-6fae-4f52-9656-804bf102738a",
+			"key": "phone_number_with_country",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "de4aeed7-627f-49d4-ad13-90e2f6ed8a2e",
+			"key": "auth_hmac_key",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "76d5a1d1-a94a-4612-965d-485f00e04b4c",
+			"key": "admin_hmac_key",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "de39d73a-3c2e-49b9-839f-8809279500ec",
+			"key": "date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d2771afd-8b89-4167-9088-53ce57010870",
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "2269f5b3-bc39-4f1a-bfcd-29a1a5f9214e",
+			"key": "phone_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "5a0f411d-46ec-4261-a8c4-2799a860ea92",
+			"key": "integration_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "edb5c152-9470-4a3d-9574-5bf29cbc49d7",
+			"key": "trusted_group_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "b54d9290-d1f7-4192-92a8-f7b3ccfb5f81",
+			"key": "blocked_group_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
