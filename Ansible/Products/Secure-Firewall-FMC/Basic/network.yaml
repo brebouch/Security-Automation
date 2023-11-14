@@ -1,0 +1,40 @@
+- hosts: all
+  connection: httpapi
+  tasks:
+    - name: Get Domain UUID
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+    - name: Get Network Objects
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: "networkObjects"
+      register: result
+    - name: Get Intrusion Policies
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllIntrusionPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: intrusionPolicies
+    - name: Get Access Policies
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: accessPolicies
+    - name: Get Access Policy Rules
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAccessRule
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{accessPolicies[0].id}}'
+        register_as: accessPolicyRules
+    - name: Print ACP Rules
+      debug:
+        var: accessPolicyRules
+    - name: Loop Through Rules & Print Each Rule ID
+      ansible.builtin.command: echo {{ query('dict', item|default({}))}}
+      loop: "{{accessPolicyRules|default([])}}"
+
