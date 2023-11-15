@@ -1,9 +1,4 @@
 
-resource "vsphere_resource_pool" "rp" {
-  name                    = "Terraform"
-  parent_resource_pool_id = data.vsphere_host.host.resource_pool_id
-}
-
 # Create Virtual Switch
 
 resource "vsphere_distributed_virtual_switch" "switch" {

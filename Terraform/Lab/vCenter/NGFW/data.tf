@@ -20,7 +20,7 @@ data "vsphere_network" "network" {
 data "vsphere_content_library" "library" {
   name = var.content_library
 }
-
+/*
 data "vsphere_content_library_item" "library_item" {
   name = var.content_library_item
   library_id = data.vsphere_content_library.library.id
@@ -28,7 +28,7 @@ data "vsphere_content_library_item" "library_item" {
 }
 
 
-/*
+
 resource "vsphere_virtual_machine" "vm" {
   name             = "foo"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id

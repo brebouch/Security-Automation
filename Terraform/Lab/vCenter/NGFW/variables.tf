@@ -170,9 +170,8 @@ variable "domain_name" {
 #
 ################################
 
-variable "ovf_url" {
+variable "ovf_file_path" {
   type = string
-  default = "https://vc1.dcloud.local/cls/vcsp/lib/8334b983-3e00-4575-84de-92eb35137d5e/d8f3ee47-fa16-4638-9b38-b9d7e15529c5/Cisco_Secure_Firewall_Threat_Defense_Virtual-ESXi-7.2.5-208_caafa12b-350b-439c-b5fb-fcf187b0fd2d.ovf"
 }
 
 variable "cpu" {
@@ -191,6 +190,11 @@ variable "password" {
   description = "Admin user password"
   type        = string
   sensitive   = true
+}
+
+variable "deployment_option" {
+  type = string
+  default = "4Core8GB"
 }
 
 variable "hostname" {
