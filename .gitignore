@@ -1,1 +1,8 @@
-.idea
+.idea/
+
+*.tfvars
+
+!/Terraform/Lab/vCenter/NGFW/.terraform/
+!/Terraform/Lab/vCenter/NGFW/.terraform.lock.hcl
+!/Terraform/Lab/vCenter/NGFW/terraform.tfstate
+!/Terraform/Lab/vCenter/NGFW/terraform.tfstate.backup
