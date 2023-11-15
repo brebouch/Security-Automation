@@ -55,7 +55,7 @@ resource "vsphere_virtual_machine" "vm" {
   }
   ovf_deploy {
     allow_unverified_ssl_cert = true
-    local_ovf_path            = "./OVF/${var.ovf_file}"
+    local_ovf_path            = var.ovf_file_path
     disk_provisioning         = "thin"
     deployment_option = var.deployment_option
     enable_hidden_properties = true

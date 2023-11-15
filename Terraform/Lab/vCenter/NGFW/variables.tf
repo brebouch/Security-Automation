@@ -170,10 +170,6 @@ variable "domain_name" {
 #
 ################################
 
-variable "ovf_file_path" {
-  type = string
-}
-
 variable "cpu" {
   default     = "4"
   description = "FTDv number pf CPUs"
@@ -184,6 +180,9 @@ variable "memory" {
   default     = "8192"
   description = "FTDv memory allocation"
   type        = string
+}
+variable "ovf_file_path" {
+  type = string
 }
 
 variable "password" {
@@ -307,4 +306,66 @@ variable "fmc_nat_id" {
   default = ""
   description = "FMC NAT ID"
   type        = string
+}
+
+variable "ftd_performance_license_tier" {
+  type = string
+  default = "FTDv20"
+}
+
+
+#####################################
+#
+# FMC Variables
+#
+#####################################
+
+variable "fmc_username" {
+  type = string
+}
+
+variable "fmc_password" {
+  type = string
+}
+
+variable "fmc_insecure_skip_verify" {
+  type = bool
+  default = true
+}
+
+variable "insCount" {
+    default = 2
+}
+
+variable "ftd_ips" {
+  type    = list(string)
+  default = []
+}
+
+variable "inside_gw_ips" {
+  type    = list(string)
+  default = []
+}
+
+
+
+#############################################
+#
+# Testing Servers
+#
+#############################################
+
+variable "inside_subnet" {
+  type = string
+  default = "172.16.255.0/24"
+}
+
+variable "inside_server" {
+  type = string
+  default = "172.16.255.30"
+}
+
+variable "outside_gateway" {
+  type = string
+  default = "172.16.20.1"
 }
