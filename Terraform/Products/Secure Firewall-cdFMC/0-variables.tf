@@ -1,14 +1,4 @@
 
-variable "fmc_username" {
-  type = string
-  default = ""
-}
-
-variable "fmc_password" {
-  type = string
-  default = ""
-}
-
 variable "fmc_host" {
   type = string
 }

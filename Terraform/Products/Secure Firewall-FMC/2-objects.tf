@@ -1,6 +1,61 @@
-##################
+#########################################
+#
 # cdFMC Objects
-##################
+#
+#########################################
+
+####################
+# Data Sources
+####################
+
+# Network Group Objects
+data "fmc_network_group_objects" "network_group_object" {
+    name = "network_group_object"
+}
+
+# Network Objects
+data "fmc_network_objects" "network_object"{
+    name = "any-ipv4"
+}
+
+# Port Group Objects
+data "fmc_port_group_objects" "port_group_object" {
+    name = "test-object-group"
+}
+
+# Port Objects
+data "fmc_port_objects" "http" {
+    name = "HTTP"
+}
+
+# Host Object
+data "fmc_host_objects" "host_object" {
+    name = "CUCM-Pub"
+}
+
+# Dynamic Object
+data "fmc_dynamic_object" "dynamic_object" {
+    name = "Dynamic Object 1"
+}
+
+# ISE SGT Object
+data "fmc_ise_sgt_objects" "ise_sgt_object" {
+    name = "workstation"
+}
+
+# SGT Object
+data "fmc_sgt_objects" "sgt_object" {
+    name = "workstation"
+}
+
+# URL Object
+data "fmc_url_objects" "url" {
+    name = "DNAC"
+}
+
+####################
+# Resources
+####################
 
 # Network Objects
 resource "fmc_network_objects" "inside_subnet" {
