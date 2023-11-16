@@ -6,3 +6,4 @@
 !/Terraform/Lab/vCenter/NGFW/.terraform.lock.hcl
 !/Terraform/Lab/vCenter/NGFW/terraform.tfstate
 !/Terraform/Lab/vCenter/NGFW/terraform.tfstate.backup
+!/Terraform/Products/Secure Firewall-FMC/PolicyGenerating/terraform.tfvars
