@@ -89,3 +89,28 @@ resource "vsphere_virtual_machine" "vm" {
     }
   }
 }
+
+
+resource "vsphere_virtual_machine" "app_vm" {
+  name             = var.virtual_machine
+  folder = var.folder
+  resource_pool_id = data.vsphere_host.host.resource_pool_id
+  host_system_id   = data.vsphere_host.host.id
+  datacenter_id    = data.vsphere_datacenter.datacenter.id
+  datastore_id     = data.vsphere_datastore.datastore.id
+  num_cpus = 2
+  memory = 4096
+  disk {
+    label = "disk0"
+    size = "50"
+    attach = true
+  }
+  cdrom {
+    datastore_id = "data.vsphere_datastore.datastore.id"
+  }
+  network_interface {
+    network_id = vsphere_distributed_port_group.pg.id
+  }
+}
+
+
