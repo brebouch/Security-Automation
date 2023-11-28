@@ -11,3 +11,10 @@
 *.lock.hcl
 */terraform.tfstate
 */.terraform/*
+/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.2.4-165.vmdk
+/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.3.1-19.vmdk
+/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.2.4-165.ovf
+/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.3.1-19.ovf
+/Terraform/Lab/vCenter/NGFW/.terraform/
+
+/Terraform/Lab/vCenter/ASA/.terraform/
