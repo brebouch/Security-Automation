@@ -1,0 +1,11 @@
+[asa]
+172.16.10.1 ansible_ssh_host=172.16.10.1 ansible_ssh_common_args="-o HostKeyAlgorithms=ssh-rsa -o KexAlgorithms=diffie-hellman-group1-sha1 -o Ciphers=aes256-cbc,3des-cbc -o MACs=hmac-sha1,hmac-sha2-512"
+
+[asa:vars]
+ansible_ssh_pass=***************
+ansible_become_pass=********************
+ansible_user=admin
+ansible_network_os=asa
+ansible_connection=network_cli
+ansible_become=yes
+ansible_become_method=enable
