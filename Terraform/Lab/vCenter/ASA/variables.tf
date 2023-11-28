@@ -99,12 +99,12 @@ variable "distributed_virtual_switch" {
 
 variable "virtual_switch" {
   type = string
-  default = "vSwitchNGFW-Inside"
+  default = "vSwitchNGFW-ASA-Inside"
 }
 
 variable "virtual_port_group" {
   type = string
-  default = "NGFW-Inside"
+  default = "NGFW-ASA-Inside"
 }
 
 #########################
@@ -155,7 +155,7 @@ variable "content_type" {
 
 variable "virtual_machine" {
   type = string
-  default = "FTDv"
+  default = "ASAv"
 }
 
 variable "domain_name" {
@@ -197,7 +197,7 @@ variable "password" {
 }
 
 variable "hostname" {
-  description = "FTDv hostname"
+  description = "ASAv hostname"
   type        = string
 }
 

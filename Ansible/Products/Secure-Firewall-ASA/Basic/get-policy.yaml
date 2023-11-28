@@ -1,0 +1,20 @@
+---
+
+- hosts: asa
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: Gather listed Object-Groups with provided configurations
+      cisco.asa.asa_ogs:
+        config:
+        state: gathered
+      register: objects
+    - local_action: copy content="{{ objects.gathered }}" dest="./Config/objects.json"
+    - name: Gather Access Rules
+      cisco.asa.asa_acls:
+        config:
+        state: gathered
+      register: objects
+    - local_action: copy content="{{ objects.gathered }}" dest="./Config/acls.json"
+
