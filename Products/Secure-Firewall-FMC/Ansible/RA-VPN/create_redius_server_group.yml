@@ -1,0 +1,92 @@
+- hosts: all
+  connection: httpapi
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Print Domain
+      ansible.builtin.debug:
+        msg:
+          - "{{ domain }}"
+
+    - name: Get Radius Interface Object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllInterfaceObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: radius_interface_objects
+
+    - name: Extract Radius Interface
+      set_fact:
+        radius_interface_name: "{{ radius_interface_objects | json_query(query_name)|list }}"
+        radius_interface_id: "{{ radius_interface_objects | json_query(query_id)|list }}"
+      vars:
+        query_name: "@[?name==`{{ radius_server_interface }}`].name"
+        query_id: "@[?name==`{{ radius_server_interface }}`].id"
+
+    - name: Get Radius Servers
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllRadiusServerGroupModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: radius_servers
+
+    - name: Print Radius Servers
+      ansible.builtin.debug:
+        msg:
+          - "{{ radius_servers }}"
+
+    - name: Radius Server Exists
+      set_fact:
+        radius_exists: "{{ radius_servers | json_query(query)|default('')}}"
+      vars:
+        query: "@[?name==`{{ radius_server_name }}`].name"
+
+    - name: Extract Radius Server
+      when: radius_exists != ''
+      set_fact:
+        radius_name: "{{ radius_servers | json_query(query_name) }}"
+        radius_id: "{{ radius_servers | json_query(query_id)|list }}"
+      vars:
+        query_name: "@[?name==`{{ radius_server_name }}`].name"
+        query_id: "@[?name==`{{ radius_server_name }}`].id"
+
+    - name: Print Radius Server
+      when: radius_exists != ''
+      ansible.builtin.debug:
+        msg:
+          - "{{ radius_name }}"
+          - "{{ radius_id }}"
+
+    - name: Create Radius Server Group
+      when: radius_exists == ''
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleRadiusServerGroupModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          enableAuthorizeOnly: false
+          radiusServers:
+            - secretKey: "{{ radius_server_secret}}"
+              authenticationPort: 1812
+              accountingPort: 1813
+              useRoutingToSelectInterface: false
+              timeout: 10
+              interface:
+                name: "{{ radius_interface_name[0] }}"
+                id: "{{ radius_interface_id[0] }}"
+                type: "SecurityZone"
+              host: "{{ radius_server_host }}"
+          enableMergeDacl: false
+          enableInterimAccountUpdate: false
+          enableDynamicAuthorization: true
+          retryInterval: 10
+          dynamicAuthorizationPort: 1700
+          groupAccountingMode: "SINGLE"
+          type: "RadiusServerGroup"
+          name: "{{ radius_server_name }}"
+        register_as: radius_servers
