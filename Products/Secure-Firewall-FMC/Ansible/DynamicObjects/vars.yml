@@ -2,5 +2,6 @@
 ## Dynamic Object
 #------------------------------------------------------
 dynamic_object_name: "RA-VPN"
-add_ip: "1.1.1.1"
+add_ip: "5.5.5.5"
+remove_ip: "1.1.1.1"
 

@@ -76,19 +76,39 @@
         msg:
           - '{{ dynamic_object_mapping }}'
 
-    - name: Update Dynamic Object Mapping
+    - name: Update Dynamic Object Mapping Add Example
       cisco.fmcansible.fmc_configuration:
-        operation: updateDynamicObjectMappings
+        operation: createDynamicObjectMappingsBulk
         path_params:
           domainUUID: '{{ domain[0].uuid }}'
-          objectId: '{{ dynamic_object_id }}'
-        query_params:
-          action: 'add'
         data:
-          type: 'DynamicObjectMappings'
-          id: '{{ dynamic_object_id }}'
-          mappings:
-            - '{{ add_ip }}'
+          add:
+            - mappings:
+                - '{{ add_ip }}'
+              dynamicObject:
+                name: '{{ dynamic_object.name }}'
+                id: '{{ dynamic_object.id }}'
+                type: 'DynamicObject'
+        register_as: new_dynamic_object_mapping
+
+    - name: Print New Dynamic Object Mapping
+      ansible.builtin.debug:
+        msg:
+          - "{{ new_dynamic_object_mapping }}"
+
+    - name: Update Dynamic Object Mapping Remove Example
+      cisco.fmcansible.fmc_configuration:
+        operation: createDynamicObjectMappingsBulk
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          remove:
+            - mappings:
+                - '{{ remove_ip }}'
+              dynamicObject:
+                name: '{{ dynamic_object.name }}'
+                id: '{{ dynamic_object.id }}'
+                type: 'DynamicObject'
         register_as: new_dynamic_object_mapping
 
     - name: Print New Dynamic Object Mapping
