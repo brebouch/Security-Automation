@@ -1,0 +1,287 @@
+{
+	"info": {
+		"_postman_id": "e1155a5a-f8c3-428e-8101-d34042b3208c",
+		"name": "Cisco Identity Intelligence Public API",
+		"description": "## **Overview**\n\nThe Cisco Identity Intelligence API is a [GraphQL API.](https://graphql.org/) Our API uses machine-to-machine (M2M) authentication through the [OAuth 2.0 client credentials flow](https://datatracker.ietf.org/doc/html/rfc6749).\n\n## Authorization\n\nWe have chosen to use the **JWT** (JSON Web Token) as a type of access token, which allows you to sign a payload containing a JSON with a variable number of claims. Claims are a common way for applications to acquire user information, such as the permissions of the client that requested authentication. Client Credentials authentication method is based on sharing **a client ID, a client secret,** and **an audience** between the client and the Client Credentials service. This pair is created during client registration.\n\nAn access token is valid for 10 hours. The client must request a new token whenever it requires one.\n\n## Set up\n\n- Create an API Client integration in the Cisco Identity Intelligence console, and copy the integration properties aside\n    \n- Open the collection `Variables` tab\n- Configure `oortDomain` to match the domain of the Cisco Identity Intelligence:\n    - `api.oort.io` for the production environment in US\n    - `api.au.oort.io` for the production environment in Australia\n    - `api.eu.oort.io` for the production environment in Europe\n    - `api.staging.oort.io` for the staging environment\n- Configure the rest of the variables using the API Client integration properties you copied earlier under the `Current Value` column\n- Leave `oortAccessToken` empty, this is filled by the script in the `Pre-request Script` tab\n- Save the changes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2015697"
+	},
+	"item": [
+		{
+			"name": "get end user state",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query getEndUserState {\n    getEndUserState(login: \"test@oort.io\") {\n        id\n        login\n        displayName\n        status\n        userTypeClassification\n        managerLogin\n        ipAddresses {\n            ipAddress\n            location {\n                city\n                state \n                country\n            }\n        }\n        phoneNumber\n        unusedApplications\n        usedFactors\n        referenceUrl\n        registeredLocationDetails {\n            city\n            state\n            country\n        }\n        workingLocationDetails {\n            location {\n                city\n                state\n                country\n            }\n            userLocationPrevalence\n        }\n    }\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Fetch a concise summary of end-user information, including key fields and relevant details."
+			},
+			"response": []
+		},
+		{
+			"name": "get end user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query GetEndUser {\n  getEndUser(login: \"test@oort.io\") {\n    endUserDetails {\n      id\n      login\n      displayName\n      department\n      title\n      userIds\n      employeeIds\n      groupNames\n      phoneNumbers\n      managerLogin\n      mfaEnabled\n      status\n      lastSignIn {\n        timestamp\n        location {\n          city\n          state\n          country\n        }\n        result\n        ipAddress\n        reason\n      }\n      userTypeClassification\n      devices {\n        deviceId\n        displayName\n        deviceType\n        provider\n        os\n        lastSeen\n      },\n      failingChecks\n      firstCreatedDate\n      referenceUrl\n    }\n    providerEndUserDetails {\n      userId\n      login\n      provider\n      firstName\n      lastName\n      displayName\n      department\n      title\n      status\n      company\n      employeeId\n      managerLogin\n      lastSignIn {\n        timestamp\n        location {\n          city\n          state\n          country\n        }\n        result\n        ipAddress\n        reason\n      }\n      userTypeClassification\n      mfaEnabled\n      creationDate\n      lastUpdated\n    }\n  }\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Fetch a concise summary of end-user information, including key fields and relevant details."
+			},
+			"response": []
+		},
+		{
+			"name": "get end users by IP",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query getEndUsersByIp {\n    getEndUsersByIp(ipAddress: \"1.2.3.4\") {\n        items {\n            id\n            displayName\n            login\n            referenceUrl\n        }\n    }\n}\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Retrieve users associated with a specified IP address."
+			},
+			"response": []
+		},
+		{
+			"name": "list end users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query ListEndUsers {\n  listEndUsers(input: {}, pageSize: 4) {\n    items {\n      id\n      login\n      displayName\n      status\n      groupNames\n      employeeIds\n      title\n      department\n      phoneNumbers\n      managerLogin\n      failingChecks\n      userTypeClassification\n      providers\n      company\n      linkedEndUserLogins\n      lastActive\n      lastSignIn {\n        timestamp\n        location {\n          city\n          state\n          country\n        }\n        result\n        ipAddress\n        reason\n      }\n      referenceUrl\n    }\n    pageToken\n  }\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Retrieve users associated with a specified IP address."
+			},
+			"response": []
+		},
+		{
+			"name": "register webhook with API key",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation registerWebhookWithApiKey {\n    registerWebhookWithApiKey(input: {\n        name: \"test-webhook\"\n        endpoint: \"https://endpoint.test.com\"\n        apiKeyName: \"testKeyName\"\n        apiKey: \"dummy\"\n        checkIds: [\"inactive-users\"]\n    })\n}\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Register a Webhook Notification Target with an API key as a target for Failed Check findings.  \nSee more at [https://docs.oort.io/integrations/webhooks](https://docs.oort.io/integrations/webhooks)"
+			},
+			"response": []
+		},
+		{
+			"name": "unregister webhook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{oortAccessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation unregisterWebhook {\n    unregisterWebhook(id: \"webhook-id\")\n}\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://{{oortDomain}}/api",
+					"protocol": "https",
+					"host": [
+						"{{oortDomain}}"
+					],
+					"path": [
+						"api"
+					]
+				},
+				"description": "Unregister a Webhook Notification Target."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{oortAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"(async () => {",
+					"    const postRequest = {",
+					"    url: pm.collectionVariables.get('tokenUrl'),",
+					"    method: 'POST',",
+					"    header: {",
+					"      'Content-Type': 'application/json'",
+					"    },",
+					"    body: {",
+					"      mode: 'raw',",
+					"      raw: JSON.stringify({",
+					"        client_id: pm.collectionVariables.get('clientId'),",
+					"        client_secret: pm.collectionVariables.get('clientSecret'),",
+					"        audience: pm.collectionVariables.get('audience'),",
+					"        grant_type: 'client_credentials'",
+					"      })",
+					"    }",
+					"  };",
+					"  pm.sendRequest(postRequest, (error, response) => {",
+					"    console.log(error ? error : response.json());",
+					"    pm.collectionVariables.set(\"oortAccessToken\", response.json().access_token);",
+					"  });",
+					"})();",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "oortDomain",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenUrl",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clientSecret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "audience",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "oortAccessToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
