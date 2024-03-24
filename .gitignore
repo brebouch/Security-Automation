@@ -1,20 +1,23 @@
 .idea/
+token.txt
+*/venv/*
+
 
 *.tfvars
 
-!/Terraform/Lab/vCenter/NGFW/.terraform/
-!/Terraform/Lab/vCenter/NGFW/.terraform.lock.hcl
-!/Terraform/Lab/vCenter/NGFW/terraform.tfstate
-!/Terraform/Lab/vCenter/NGFW/terraform.tfstate.backup
+!/Lab/vCenter/NGFW/.terraform/
+!/Lab/vCenter/NGFW/.terraform.lock.hcl
+!/Lab/vCenter/NGFW/terraform.tfstate
+!/Lab/vCenter/NGFW/terraform.tfstate.backup
 !/Terraform/Products/Secure Firewall-FMC/PolicyGenerating/terraform.tfvars
-/Terraform/Lab/vCenter/CDO/.terraform/
+/Lab/vCenter/CDO/.terraform/
 *.lock.hcl
 */terraform.tfstate
 */.terraform/*
-/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.2.4-165.vmdk
-/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.3.1-19.vmdk
-/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.2.4-165.ovf
-/Terraform/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.3.1-19.ovf
-/Terraform/Lab/vCenter/NGFW/.terraform/
+/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.2.4-165.vmdk
+/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-7.3.1-19.vmdk
+/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.2.4-165.ovf
+/Lab/vCenter/NGFW/OVF/Cisco_Secure_Firewall_Threat_Defense_Virtual-VI-7.3.1-19.ovf
+/Lab/vCenter/NGFW/.terraform/
 
-/Terraform/Lab/vCenter/ASA/.terraform/
+/Lab/vCenter/ASA/.terraform/

@@ -1,0 +1,65 @@
+- hosts: all
+  connection: httpapi
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Print Domain
+      ansible.builtin.debug:
+        msg:
+          - "{{ domain }}"
+
+    - name: Get Certificate Enrollments
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllVpnCertEnrollmentModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: cert_enrollments
+
+    - name: Print Cert Enrollments
+      ansible.builtin.debug:
+        msg:
+          - "{{ cert_enrollments }}"
+
+    - name: Certificate Enrollments Exists
+      set_fact:
+        exists: "{{ cert_enrollments | json_query(query)|default([])}}"
+      vars:
+        query: "@[?name==`{{ cert_enrollment_name }}`].name"
+
+    - name: Extract Cert Enrollment
+      when: exists != []
+      set_fact:
+        cert_enrollment_name: "{{ cert_enrollments | json_query(query_name)|list }}"
+        cert_enrollment_id: "{{ cert_enrollments | json_query(query_id)|list }}"
+      vars:
+        query_name: "@[?name==`{{ cert_enrollment_name }}`].name"
+        query_id: "@[?name==`{{ cert_enrollment_name }}`].id"
+
+    - name: Print Cert Enrollment
+      when: exists != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ cert_enrollment_name }}"
+          - "{{ cert_enrollment_id }}"
+
+    - name: Create Certificate Enrollment
+      when: exists == [] && "{{ cert_enrollment_type }}" == "MANUAL"
+      cisco.fmcansible.fmc_configuration:
+        operation: createVpnCertEnrollmentModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          enrollmentType: "{{ cert_enrollment_type }}"
+          caCertificate:
+            base64Content: "{{ ca_certificate_data}}"
+            caOnly: true
+          skipCaFlagCheck: false
+          type: "CertEnrollment"
+          name: "{{ cert_enrollment_name }}"
+          overridable: true
+        register_as: cert_enrollment
