@@ -1,0 +1,85 @@
+#------------------------------------------------------
+## RA VPN Settings
+#------------------------------------------------------
+ra_vpn_name: "RA-VPN"
+ra_vpn_connection_profile_name: "CUST_ACCESS_PROFILE"
+connection_profile_alias: "CUST-ALIAS"
+connection_profile_url: "CUST-URL.name"
+ra_vpn_cert_enrollment: "VPN-Cert"
+ldap_map_cisco_attribute_name: "CUST_VPN"
+ldap_map_ldap_value: "DC=dcloud,DC=local"
+dynamic_access_policy_name: "CAOC-DAP"
+dynamic_access_record_name: "CUST_DAP_RECORD4"
+dynamic_access_ldap_group: "Employee"
+
+
+#------------------------------------------------------
+## Device
+#------------------------------------------------------
+ftd_device_name: "Lab FTDv"
+
+
+#------------------------------------------------------
+## Interface
+#------------------------------------------------------
+interface_name: "GigabitEthernet0/1"
+sub_interface: 1
+
+
+#------------------------------------------------------
+## Banner Message
+#------------------------------------------------------
+banner_message: "This is a banner"
+
+
+#------------------------------------------------------
+## Split Tunnel Settings
+#------------------------------------------------------
+split_tunnel_acl_name: "CUST-SPLIT-TUNNEL"
+split_tunnel_domain: "Test.customer.domain"
+
+
+#------------------------------------------------------
+## DNS Settings
+#------------------------------------------------------
+dns_server_name: "CUST-DNS-001"
+dns_server_ip: "172.16.20.212"
+default_domain: "test.customer.domain"
+
+
+#------------------------------------------------------
+## AAA Settings
+#------------------------------------------------------
+is_radius: false
+is_realm: true
+radius_server_name: "ISE-Radius-1"
+radius_server_host: "172.16.20.141"
+radius_server_secret: "C1sco12345"
+radius_server_interface: "dmz"
+realm_name: "AD"
+
+
+#------------------------------------------------------
+## Address Pool
+#------------------------------------------------------
+address_pool_name: "CUST-ADDRESS-POOL"
+address_pool_range: "10.2.2.13-10.2.2.254"
+address_pool_mask: "255.255.255.0"
+
+
+#------------------------------------------------------
+## Group Policy
+#------------------------------------------------------
+group_policy_name: "CUST_GP"
+group_policy_description: ""
+group_policy_enable_ssl: true
+group_policy_enable_ikev2: true
+
+
+#------------------------------------------------------
+## Static Route Info
+#------------------------------------------------------
+host_object_name: "AD1_outside"
+network_object_name: "dCloud_Shared_Services"
+gateway_object_name: "esxi_inside"
+logical_interface_name: "DMZ"

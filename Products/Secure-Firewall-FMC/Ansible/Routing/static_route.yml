@@ -1,0 +1,100 @@
+- hosts: all
+  connection: httpapi
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Print Domain
+      ansible.builtin.debug:
+        msg:
+          - "{{ domain }}"
+
+    - name: Get FTD Device
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'name:{{ ftd_device_name }}'
+        register_as: ftd_device
+
+    - name: Print Devices
+      ansible.builtin.debug:
+        msg:
+          - "{{ ftd_device[0] }}"
+
+
+    - name: Get Host Object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllHostObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ host_object_name }}'
+        register_as: host_object
+
+    - name: Print Host Object
+      ansible.builtin.debug:
+        msg:
+          - "{{ host_object }}"
+
+    - name: Get Network Object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllNetworkObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ network_object_name }}'
+        register_as: network_object
+
+    - name: Print Network Object
+      ansible.builtin.debug:
+        msg:
+          - "{{ network_object }}"
+
+    - name: Get Gateway Object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllHostObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ gateway_object_name }}'
+        register_as: gateway_object
+
+    - name: Print Gateway Object
+      ansible.builtin.debug:
+        msg:
+          - "{{ gateway_object }}"
+
+    - name: Static Route
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleIPv4StaticRouteModel
+        path_params:
+          domainUUID: "{{ domain[0].uuid }}"
+          containerUUID: "{{ ftd_device[0].id }}"
+        data:
+          interfaceName: "{{ logical_interface_name }}"
+          selectedNetworks:
+            - type: "{{ host_object[0].type }}"
+              id: "{{ host_object[0].id }}"
+              name: "{{ host_object[0].name }}"
+            - type: "{{ network_object[0].type }}"
+              id: "{{ network_object[0].id }}"
+              name: "{{ network_object[0].name }}"
+          gateway:
+            object:
+              type: "{{ gateway_object[0].type }}"
+              id: "{{ gateway_object[0].id }}"
+              name: "{{ gateway_object[0].name }}"
+          type: "IPv4StaticRoute"
+          metricValue: 200
+        register_as: static_route
+
+    - name: Print Static Route
+      ansible.builtin.debug:
+        msg:
+          - "{{ static_route }}"

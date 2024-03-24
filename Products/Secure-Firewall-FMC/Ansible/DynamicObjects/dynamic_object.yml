@@ -1,0 +1,97 @@
+- hosts: all
+  connection: httpapi
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Print Domain
+      ansible.builtin.debug:
+        msg:
+          - '{{ domain }}'
+
+    - name: Get Existing Dynamic Object
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDynamicObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          name: '{{ dynamic_object_name }}'
+        register_as: existing_dynamic_object
+
+    - name: Print ExitingDynamic Object
+      ansible.builtin.debug:
+        msg:
+          - '{{ existing_dynamic_object }}'
+
+    - name: Set Local Dynamic Object
+      when: existing_dynamic_object != []
+      set_fact:
+        dynamic_object: '{{ existing_dynamic_object[0] }}'
+        dynamic_object_id: '{{ existing_dynamic_object[0].id }}'
+
+    - name: Create Host Object
+      when: existing_dynamic_object == []
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleDynamicObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          name: '{{ dynamic_object_name }}'
+          type: 'DynamicObject'
+          objectType: 'IP'
+        register_as: new_dynamic_object
+
+    - name: Print New Dynamic Object
+      when: existing_dynamic_object == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ new_dynamic_object }}"
+
+    - name: Set Local Dynamic Object
+      when: existing_dynamic_object == []
+      set_fact:
+        dynamic_object: '{{ new_dynamic_object }}'
+        dynamic_object_id: '{{ new_dynamic_object.id }}'
+
+    - name: Print Local Dynamic Object
+      ansible.builtin.debug:
+        msg:
+          - '{{ dynamic_object }}'
+          -  '{{ dynamic_object_id }}'
+
+    - name: Get Dynamic Object Mapping
+      cisco.fmcansible.fmc_configuration:
+        operation: getDynamicObjectMappings
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ dynamic_object_id }}'
+        register_as: dynamic_object_mapping
+
+    - name: Print Dynamic Object Mapping
+      ansible.builtin.debug:
+        msg:
+          - '{{ dynamic_object_mapping }}'
+
+    - name: Update Dynamic Object Mapping
+      cisco.fmcansible.fmc_configuration:
+        operation: updateDynamicObjectMappings
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ dynamic_object_id }}'
+        query_params:
+          action: 'add'
+        data:
+          type: 'DynamicObjectMappings'
+          id: '{{ dynamic_object_id }}'
+          mappings:
+            - '{{ add_ip }}'
+        register_as: new_dynamic_object_mapping
+
+    - name: Print New Dynamic Object Mapping
+      ansible.builtin.debug:
+        msg:
+          - "{{ new_dynamic_object_mapping }}"
