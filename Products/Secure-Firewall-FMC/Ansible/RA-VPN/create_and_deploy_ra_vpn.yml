@@ -1,0 +1,805 @@
+- hosts: all
+  connection: httpapi
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get Domain
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        register_as: domain
+
+    - name: Print Domain
+      ansible.builtin.debug:
+        msg:
+          - "{{ domain }}"
+
+    - name: Identify AAA
+      set_fact:
+        use_radius: "{{ is_radius|bool }}"
+        use_realm: "{{ is_realm|bool }}"
+
+    - name: Get Radius Servers
+      when: use_radius
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllRadiusServerGroupModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ radius_server_name }}'
+        register_as: radius_servers
+
+    - name: Print Radius Servers
+      when: use_radius
+      ansible.builtin.debug:
+        msg:
+          - "{{ radius_servers }}"
+
+    - name: Extract Radius Server
+      when: use_radius
+      set_fact:
+        radius_name: "{{ radius_servers[0].name }}"
+        radius_id: "{{ radius_servers[0].id  }}"
+
+    - name: Print Radius Server
+      when: use_radius
+      ansible.builtin.debug:
+        msg:
+          - "{{ radius_name }}"
+          - "{{ radius_id }}"
+
+    - name: Set AAA Config
+      when: use_radius
+      set_fact:
+        aaa_name: radius_name
+        aaa_id: radius_id
+        aaa_type: "RadiusServerGroup"
+
+    - name: Get Realm
+      when: use_realm
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllRealm
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          name: '{{ realm_name }}'
+        register_as: realm
+
+    - name: Print Realms
+      when: use_realm
+      ansible.builtin.debug:
+        msg:
+          - "{{ realm }}"
+
+    - name: Extract Realm Info
+      when: use_realm
+      set_fact:
+        realm_name: "{{ realm[0].name }}"
+        realm_id: "{{ realm[0].id }}"
+
+    - name: Print Realm Info
+      when: use_realm
+      ansible.builtin.debug:
+        msg:
+          - "{{ realm_name }}"
+          - "{{ realm_id }}"
+
+    - name: Set AAA Config
+      when: use_realm
+      set_fact:
+        aaa_name: realm_name
+        aaa_id: realm_id
+        aaa_type: "IdentityRealm"
+
+    - name: Get Anyconnect Packages
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllAnyConnectPackageModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: anyconnect_packages
+
+    - name: Print AnyConnect Packages
+      ansible.builtin.debug:
+        msg:
+          - "{{ anyconnect_packages }}"
+
+    - name: Extract Anyconnect MacOS
+      set_fact:
+        anyconnect_mac_name: "{{ anyconnect_packages | json_query('@[?name==`MacOS`].name')|list }}"
+        anyconnect_mac_id: "{{ anyconnect_packages | json_query('@[?name==`MacOS`].id')|list }}"
+
+    - name: Get Address Pools
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllIPv4AddressPool
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ address_pool_name }}'
+        register_as: address_pools
+
+    - name: Print Address Pools
+      ansible.builtin.debug:
+        msg:
+          - "{{ address_pools }}"
+
+    - name: Extract Address Pool
+      when: address_pools != []
+      set_fact:
+        pool_name: "{{ address_pools[0].name }}"
+        pool_id: "{{ address_pools[0].id }}"
+
+    - name: Print Address Pool
+      when: address_pools != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ pool_name }}"
+          - "{{ pool_id }}"
+
+    - name: Create Address Pool
+      when: address_pools == []
+      cisco.fmcansible.fmc_configuration:
+        operation: createIPv4AddressPool
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          mask: "{{ address_pool_mask }}"
+          type: "IPv4AddressPool"
+          ipAddressRange: "{{ address_pool_range }}"
+          overridable: true
+          description: " "
+          name: "{{ address_pool_name }}"
+        register_as: address_pool
+
+    - name: Extract Address Pool
+      when: address_pools == []
+      set_fact:
+        pool_name: "{{ address_pool.name }}"
+        pool_id: "{{ address_pool.id }}"
+
+    - name: Print Address Pool
+      when: address_pools == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ pool_name }}"
+          - "{{ pool_id }}"
+
+    - name: Get Group Policies
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllGroupPolicyModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: group_policies
+
+    - name: Print Group Policies
+      ansible.builtin.debug:
+        msg:
+          - "{{ group_policies }}"
+
+    - name: Group Policy Exists
+      set_fact:
+        group_policy_exists: "{{ group_policies | json_query(query)|default([])}}"
+      vars:
+        query: "@[?name==`{{ group_policy_name }}`].name"
+
+    - name: Extract Group Policy
+      when: group_policy_exists != []
+      set_fact:
+        policy_name: "{{ group_policies | json_query(name_query)|list }}"
+        policy_id: "{{ group_policies | json_query(id_query)|list }}"
+      vars:
+        name_query: "@[?name==`{{ group_policy_name }}`].name"
+        id_query: "@[?name==`{{ group_policy_name }}`].id"
+
+    - name: Print Group Policy
+      when: group_policy_exists != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ policy_name }}"
+          - "{{ policy_id }}"
+
+    - name: Extract Group Policy
+      when: group_policy_exists != []
+      set_fact:
+        group_policy_name: "{{ policy_name[0] }}"
+        group_policy_id: "{{ policy_id[0] }}"
+
+    - name: Print Group Policy
+      when: group_policy_exists != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ group_policy_name }}"
+          - "{{ group_policy_id }}"
+
+    - name: Add DNS Lookup Variable
+      when: group_policy_exists == []
+      set_fact:
+        have_split_dns_server_config: false
+
+    - name: Get DNS Server
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllHostObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ dns_server_name }}'
+        register_as: dns
+
+    - name: Print DNS Server
+      ansible.builtin.debug:
+        msg:
+          - "{{ dns[0] }}"
+
+    - name: Set DNS Variable
+      when: dns != []
+      set_fact:
+        dns_server_id: "{{ dns[0].id }}"
+
+    - name: Print DNS Server ID
+      when: dns != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dns_server_id }}"
+
+    - name: Create DNS Server
+      when: dns == []
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleHostObject
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          name: '{{ dns_server_name }}'
+          type: 'Host'
+          value: '{{ dns_server_ip }}'
+        register_as: dns
+
+    - name: Set DNS Variable
+      when: dns == []
+      set_fact:
+        dns_server_id: dns.id
+
+    - name: Print Created DNS Server ID
+      when: dns == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dns_server_id }}"
+
+    - name: Get Split Tunnel ACL
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllStandardACL
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ split_tunnel_acl_name }}'
+        register_as: split_tunnel
+
+
+    - name: Update Split Tunnel ACL Variable
+      when: split_tunnel != []
+      set_fact:
+        split_tunnel_acl_name: "{{ split_tunnel[0].name }}"
+        split_tunnel_acl_id: "{{ split_tunnel[0].id }}"
+
+
+    - name: Create Split Tunnel ACL
+      when: split_tunnel == []
+      cisco.fmcansible.fmc_configuration:
+        operation: createStandardACL
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          name: "{{ split_tunnel_acl_name }}"
+          type: "StandardAccessList"
+          entries:
+            - action: "PERMIT"
+              networks:
+                literals:
+                  - type: "Network"
+                    value: "172.16.0.0/16"
+                  - type: "Network"
+                    value: "192.168.0.0/16"
+        register_as: new_split_tunnel
+
+    - name: Update Split Tunnel ACL Variable
+      when: split_tunnel == []
+      set_fact:
+        split_tunnel_acl_name: "{{ new_split_tunnel.name }}"
+        split_tunnel_acl_id: "{{ new_split_tunnel.id }}"
+
+    - name: Print Split Tunnel Info
+      ansible.builtin.debug:
+        msg:
+          - "{{ split_tunnel_acl_name }}"
+          - "{{ split_tunnel_acl_id }}"
+
+    - name: Create Group Policy
+      when: group_policy_exists == []
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleGroupPolicyModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          enableSSLProtocol: true
+          enableIPsecIKEv2Protocol: true
+          generalSettings:
+            splitTunnelSettings:
+              ipv4SplitTunnelPolicy: "TUNNEL_SPECIFIED"
+              ipv6SplitTunnelPolicy: "TUNNEL_SPECIFIED"
+              splitDNSRequestPolicy: "TUNNEL_SPECIFIED_DOMAINS"
+              splitTunnelACL:
+                name: "{{ split_tunnel_acl_name }}"
+                id: "{{ split_tunnel_acl_id }}"
+                type: "Host"
+              splitDNSDomainList: "{{ split_tunnel_domain }}"
+            addressAssignment:
+              ipv4LocalAddressPool:
+                - name: "{{ pool_name }}"
+                  id: "{{ pool_id }}"
+                  type: "IPv4AddressPool"
+              defaultDomainName: "{{ default_domain }}"
+            primaryDNSServer:
+              name: "{{ dns_server_name }}"
+              id: "{{ dns_server_id }}"
+              type: "Host"
+            banner: "{{ banner_message }}"
+          anyConnectSettings:
+            sslSettings:
+              mtuSize: 1406
+              ignoreDFBit: true
+              sslCompression: "LZS"
+              dtlsCompression: "LZS"
+            connectionSettings:
+              rekeyMethod: "NEW_TUNNEL"
+              enableGatewayDPD: true
+              enableClientDPD: true
+              enableSSLRekey: false
+              enableKeepAliveMessages: true
+              keepAliveMessageInterval: 20
+              gatewayDPDInterval: 30
+              clientDPDInterval: 30
+              bypassUnsupportProtocol: false
+              rekeyInterval: 4
+          advancedSettings:
+            sessionSettings:
+              vpnIdleTimeout: 99999
+              maxConnectionTimeAlertInterval: 1
+              maxConnectionTimeout: -1
+              simultaneousLoginPerUser: 3
+              vpnIdleTimeoutAlertInterval: 1
+          type: "GroupPolicy"
+          name: "{{ group_policy_name }}"
+        register_as: group_policy
+
+    - name: Print Group Policy
+      when: group_policies == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ group_policy.name }}"
+          - "{{ group_policy.id }}"
+
+    - name: Get Cert Enrollment
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllVpnCertEnrollmentModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'nameOrValue:{{ ra_vpn_cert_enrollment }}'
+        register_as: cert_enrollments
+
+    - name: Print Cert Enrollments
+      ansible.builtin.debug:
+        msg:
+          - "{{ cert_enrollments }}"
+
+    - name: Extract Cert Enrollment
+      set_fact:
+        cert_enrollment_name: "{{ cert_enrollments[0].name }}"
+        cert_enrollment_id: "{{ cert_enrollments[0].id }}"
+
+    - name: Print Cert Enrollment
+      ansible.builtin.debug:
+        msg:
+          - "{{ cert_enrollment_name }}"
+          - "{{ cert_enrollment_id }}"
+
+    - name: Get Dynamic Access Policies
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDynamicAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          expanded: true
+        register_as: dynamic_access_policies
+
+    - name: Extract Dynamic Access Policies
+      set_fact:
+        dynamic_access_policy: "{{ dynamic_access_policies | json_query(policy_query) }}"
+      vars:
+        policy_query: "@[?name==`{{ dynamic_access_policy_name }}`]"
+
+    - name: Check for Existing Record
+      set_fact:
+        dynamic_access_record_exists: "{{ dynamic_access_policy[0].authorizationAttributes | json_query(record_query) }}"
+      vars:
+        record_query: "@[?dapRecordName==`{{ dynamic_access_record_name }}`]"
+
+    - name: Print Dynamic Access Policy Record Info
+      ansible.builtin.debug:
+        msg:
+          - "{{ dynamic_access_policy }}"
+          - "{{ dynamic_access_record_exists }}"
+
+    - name: Extract Dynamic Access Record XML
+      set_fact:
+        dynamic_access_record_xml: "{{ dynamic_access_policy[0].dapXmlConfig | b64decode }}"
+
+    - name: Print Dynamic Access Policy Record XML
+      ansible.builtin.debug:
+        msg:
+          - "{{ dynamic_access_record_xml }}"
+
+    - name: Add XML Record
+      when: dynamic_access_record_exists == []
+      xml:
+        xmlstring: "{{ dynamic_access_record_xml }}"
+        xpath: /dapRecordList
+        input_type: "xml"
+        pretty_print: yes
+        add_children:
+          - "<dapRecord><dapName><value>{{ dynamic_access_record_name }}</value></dapName><dapViewsRelation><value>and</value></dapViewsRelation><dapBasicView><dapSelection><dapPolicy><value>match-all</value></dapPolicy><attr><name>aaa.cisco.tunnelgroup</name><operation>EQ</operation><value>{{ ra_vpn_connection_profile_name }}</value></attr><attr><name>aaa.cisco.grouppolicy</name><operation>EQ</operation><value>{{ group_policy_id }}</value><type>GroupPolicy</type></attr><attr><name>aaa.ldap.memberOf</name><operation>EQ</operation><value>{{ dynamic_access_ldap_group }}</value></attr></dapSelection></dapBasicView></dapRecord>"
+      register: updated_xml
+
+    - name: Read Updated Dynamic Access Record XML
+      when: dynamic_access_record_exists == []
+      set_fact:
+        dap_record_xml: "{{ updated_xml.xmlstring | replace('\t', '  ') }}"
+
+    - name: Print Dynamic Access Record XML
+      when: dynamic_access_record_exists == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dap_record_xml }}"
+
+    - name: Base64 Encode Dynamic Access Record XML
+      when: dynamic_access_record_exists == []
+      set_fact:
+        dynamic_access_record_b64: "{{ dap_record_xml | b64encode }}"
+
+    - name: Create DAP Record JSON Entry
+      when: dynamic_access_record_exists == []
+      set_fact:
+        dap_record:
+          - dapRecordName: "{{ dynamic_access_record_name }}"
+            action: "CONTINUE"
+            priority: 3
+
+    - name: Append New DAP Records JSON
+      when: dynamic_access_record_exists == []
+      set_fact:
+        dap_auth_attributes: "{{ dynamic_access_policy[0].authorizationAttributes + dap_record }}"
+
+    - name: Print Dynamic Access Authorization Attributes
+      when: dynamic_access_record_exists == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dap_auth_attributes }}"
+
+    - name: Update Dynamic Access Policy
+      when: dynamic_access_record_exists == []
+      cisco.fmcansible.fmc_configuration:
+        operation: updateDynamicAccessPolicy
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          objectId: '{{ dynamic_access_policy[0].id }}'
+        data:
+          name: '{{ dynamic_access_policy[0].name }}'
+          type: "DynamicAccessPolicy"
+          hostscanXmlConfig: '{{ dynamic_access_policy[0].hostscanXmlConfig }}'
+          authorizationAttributes: '{{ dap_auth_attributes }}'
+          dapXmlConfig: '{{ dynamic_access_record_b64 }}'
+        register_as: dap
+
+    - name: Print Dynamic Access Policy
+      when: dynamic_access_record_exists == []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dap }}"
+
+    - name: Print Dynamic Access Policy
+      when: dynamic_access_record_exists != []
+      ansible.builtin.debug:
+        msg:
+          - "{{ dynamic_access_policy }}"
+
+    - name: Get Device
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          filter: 'name:{{ ftd_device_name }}'
+        register_as: ftd_device
+
+    - name: Print Device
+      ansible.builtin.debug:
+        msg:
+          - "{{ ftd_device[0] }}"
+
+    - name: Get Device Sub-interfaces
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllFTDSubInterface
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: "{{ ftd_device[0].id }}"
+        query_params:
+          filter: 'name:{{ interface_name }}'
+          expanded: true
+        register_as: ftd_sub_interfaces
+
+    - name: Set Sub-interface ID Variable
+      set_fact:
+        sub_int_id: "{{ sub_interface }}"
+
+    - name: Extract Sub-interface Details
+      set_fact:
+        ftd_sub_interface: "{{ ftd_sub_interfaces | json_query(query)|list }}"
+      vars:
+        query: "@[?subIntfId==`{{ sub_interface|int }}`]"
+
+    - name: Print Subinterface
+      ansible.builtin.debug:
+        msg:
+          - "{{ ftd_sub_interface[0] }}"
+
+    - name: Print Device
+      ansible.builtin.debug:
+        msg:
+          - "{{ ftd_device[0] }}"
+
+    - name: Create RA VPN
+      cisco.fmcansible.fmc_configuration:
+        operation: createFTDRAVpnModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          name: "{{ ra_vpn_name }}"
+          accessInterfaceSettings:
+            bypassACPolicyForDecryptTraffic: false
+            interfaceSettings:
+              - accessInterface:
+                  name: "{{ interface_name }}"
+                  id: "{{ ftd_sub_interface[0].id }}"
+                  type: "SubInterface"
+                configureInterfaceIDCertificate: false
+                enableSSL: true
+                enableIPSecIkev2: false
+                enableDTLS: true
+            allowConnectionProfileSelection: true
+            webPort: 443
+            dtlsPort: 443
+            sslIdCertificate:
+              name: "{{ cert_enrollment_name[0] }}"
+              id: "{{ cert_enrollment_id[0] }}"
+              type: "CertEnrollment"
+          groupPolicies:
+            - name: "{{ group_policy_name[0] }}"
+              id: "{{ group_policy_id[0] }}"
+              type: "GroupPolicy"
+          connectionProfiles: null
+          anyConnectClientImages:
+            - operatingSystem: "WINDOWS"
+              anyconnectImage:
+                name: "{{ anyconnect_mac_name[0] }}"
+                id: "{{ anyconnect_mac_id[0] }}"
+                type: "AnyConnectPackage"
+          addressAssignmentSettings: null
+          configureSSL: true
+          dapPolicy:
+            name: "{{ dynamic_access_policy_name }}"
+            id: "{{ dynamic_access_policy.id }}"
+            type: "{{ dynamic_access_policy.type }}"
+        register_as: ra_vpn
+
+    - name: Print RA VPN
+      ansible.builtin.debug:
+        msg:
+          - "{{ ra_vpn }}"
+
+    - name: Extract RA VPN ID
+      set_fact:
+        ra_vpn_id: "{{ ra_vpn.id }}"
+        ra_vpn_name: "{{ ra_vpn.name }}"
+        address_assignment_id: "{{ ra_vpn.addressAssignmentSettings.id }}"
+        ldap_attribute_map_id: "{{ ra_vpn.ldapAttributeMaps.id }}"
+
+    - name: Print RA VPN
+      ansible.builtin.debug:
+        msg:
+          - "{{ ra_vpn_id }}"
+          - "{{ address_assignment_id }}"
+          - "{{ ldap_attribute_map_id }}"
+
+    - name: Update RA VPN LDAP Attribute Maps
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDRAVpnLDAPAttributeModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ ra_vpn_id }}'
+          objectId: '{{ ldap_attribute_map_id }}'
+        data:
+          ldapAttributeMapList:
+            - ldapServer:
+              name: "{{ realm_name }}"
+              id: "{{ realm_id }}"
+              type: "Realm"
+              ldapAttributeMaps:
+                  ldapName: "memberOf"
+                  ciscoName: "Group-Policy"
+                  valueMappings:
+                    - valueType: "LdapToGroupPolicyMapping"
+                      groupPolicy:
+                        name: "{{ group_policy_name[0] }}"
+                        id: "{{ group_policy_id[0] }}"
+                        type: "GroupPolicy"
+                      ldapValue: "{{ ldap_map_ldap_value }}"
+          type: "RaVpnLdapAttributeMap"
+        register: ldap_attribute_maps
+
+    - name: Update RA VPN Address Assignment
+      cisco.fmcansible.fmc_configuration:
+        operation: updateFTDRAVpnAddressAssignmentSetting
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ ra_vpn_id }}'
+          objectId: '{{ address_assignment_id }}'
+        data:
+          useAuthorizationServerForIPv4: true
+          useDHCP: true
+          useInternalAddressPoolForIPv4: true
+          ipAddressReuseInterval: 10
+          useAuthorizationServerForIPv6: false
+          useInternalAddressPoolForIPv6: false
+        register_as: address_assignment
+
+    - name: Print Address Assignment
+      ansible.builtin.debug:
+        msg:
+          - "{{ address_assignment }}"
+
+    - name: Create RA VPN Connection Profile
+      cisco.fmcansible.fmc_configuration:
+        operation: createFTDRAVpnConnectionProfileModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+          containerUUID: '{{ ra_vpn_id }}'
+        data:
+          ipv4AddressPool:
+            - name: "{{ pool_name }}"
+              id: "{{ pool_id }}"
+              type: "IPv4AddressPool"
+          allowConnectionOnlyIfAuthorized: false
+          enablePasswordManagement: true
+          passwordExpirationNotificationPeriod: 14
+          primaryAuthenticationServer:
+            name: "{{ aaa_name }}"
+            id: "{{ aaa_id }}"
+            type: "{{ aaa_type }}"
+          groupAlias:
+            - aliasName: "{{ connection_profile_alias }}"
+              enabled: true
+          groupUrl:
+            - aliasUrl:
+                id: ""
+                name: "{{ connection_profile_url }}"
+                type: "URLObject"
+          useLocalAsPrimaryAuthServer: false
+          enablePrimaryAuthFallbackToLocal: false
+          useLocalAsSecondaryAuthServer: false
+          enableSecondaryAuthFallbackToLocal: false
+          enableSecondaryAuthentication: false
+          stripRealmFromUsername: false
+          stripGroupFromUsername: false
+          authenticationMethod: "AAA_ONLY"
+          groupPolicy:
+            name: "{{ group_policy_name[0] }}"
+            id: "{{ group_policy_id[0] }}"
+            type: "GroupPolicy"
+          type: "RaVpnConnectionProfile"
+          name: "{{ ra_vpn_connection_profile_name }}"
+        register_as: connection_profile
+
+    - name: Print Connection Profile
+      ansible.builtin.debug:
+        msg:
+          - "{{ connection_profile }}"
+
+    - name: Get FTD Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: ftd_devices
+
+    - name: Print Devices
+      ansible.builtin.debug:
+        msg:
+          - "{{ ftd_devices }}"
+
+    - name: Extract Lab FTDv
+      set_fact:
+        device_name: "{{ ftd_devices | json_query(query_name)|list }}"
+        device_id: "{{ ftd_devices | json_query(query_id)|list }}"
+      vars:
+        query_name: '@[?name==`{{ ftd_device_name }}`].name'
+        query_id: '@[?name==`{{ ftd_device_name }}`].id'
+
+    - name: Create VPN Policy Assignment
+      cisco.fmcansible.fmc_configuration:
+        operation: createPolicyAssignment
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data:
+          type: "PolicyAssignment"
+          policy:
+            type: "RAVpn"
+            id: "{{ ra_vpn_id }}"
+            name: "{{ ra_vpn_name }}"
+          targets:
+            - id: "{{ device_id[0] }}"
+              name: "{{ device_name[0] }}"
+              type: "Device"
+              keepLocalEvents: false
+          name: "{{ ra_vpn_name }}"
+        register_as: policy_assignment
+
+    - name: Print Policy Assignment
+      ansible.builtin.debug:
+        msg:
+          - "{{ policy_assignment }}"
+
+    - name: Get Deployable Devices
+      cisco.fmcansible.fmc_configuration:
+        operation: getDeployableDevice
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        query_params:
+          expanded: true
+        register_as: devices
+
+    - name: Complete playbook when nothing to deploy
+      meta: end_play
+      when: devices[0].device is undefined
+
+    - name: Fetch pending changes
+      cisco.fmcansible.fmc_configuration:
+        operation: getPendingChanges
+        path_params:
+          containerUUID: '{{ devices[0].device.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: pending_changes
+
+    - name: Start deployment
+      cisco.fmcansible.fmc_configuration:
+        operation: createDeploymentRequest
+        data:
+          version: '{{ devices[0].version }}'
+          deviceList:
+            - '{{ devices[0].device.id }}'
+          forceDeploy: True
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: deployment_job
+
+    - name: Poll deployment status until the job is finished
+      cisco.fmcansible.fmc_configuration:
+        operation: getDeploymentDetail
+        path_params:
+          containerUUID: '{{ devices[0].device.id }}'
+          domainUUID: '{{ domain[0].uuid }}'
+        register_as: deployment_status
+      until: deployment_status[0].status is match("SUCCEEDED")
+      retries: 100
+      delay: 3
+
+    - name: Stop the playbook if the deployment failed
+      fail:
+        msg: 'Deployment failed. Status: {{ deployment_status[0].status }}'
+      when: deployment_status[0].status is not match("SUCCEEDED")

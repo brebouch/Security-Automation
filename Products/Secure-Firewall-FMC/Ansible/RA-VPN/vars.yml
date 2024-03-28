@@ -50,8 +50,8 @@ default_domain: "test.customer.domain"
 #------------------------------------------------------
 ## AAA Settings
 #------------------------------------------------------
-is_radius: false
-is_realm: true
+is_radius: true
+is_realm: false
 radius_server_name: "ISE-Radius-1"
 radius_server_host: "172.16.20.141"
 radius_server_secret: "C1sco12345"
