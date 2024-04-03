@@ -347,6 +347,7 @@
         register_as: dynamic_access_policies
 
     - name: Extract Dynamic Access Policies
+      when: use_realm
       set_fact:
         dynamic_access_policy: "{{ dynamic_access_policies | json_query(policy_query) }}"
       vars:
@@ -359,22 +360,25 @@
         record_query: "@[?dapRecordName==`{{ dynamic_access_record_name }}`]"
 
     - name: Print Dynamic Access Policy Record Info
+      when: use_realm
       ansible.builtin.debug:
         msg:
           - "{{ dynamic_access_policy }}"
           - "{{ dynamic_access_record_exists }}"
 
     - name: Extract Dynamic Access Record XML
+      when: use_realm
       set_fact:
         dynamic_access_record_xml: "{{ dynamic_access_policy[0].dapXmlConfig | b64decode }}"
 
     - name: Print Dynamic Access Policy Record XML
+      when: use_realm
       ansible.builtin.debug:
         msg:
           - "{{ dynamic_access_record_xml }}"
 
     - name: Add XML Record
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       xml:
         xmlstring: "{{ dynamic_access_record_xml }}"
         xpath: /dapRecordList
@@ -385,7 +389,7 @@
       register: updated_xml
 
     - name: Read Updated Dynamic Access Record XML
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       set_fact:
         dap_record_xml: "{{ updated_xml.xmlstring | replace('\t', '  ') }}"
 
@@ -396,12 +400,12 @@
           - "{{ dap_record_xml }}"
 
     - name: Base64 Encode Dynamic Access Record XML
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       set_fact:
         dynamic_access_record_b64: "{{ dap_record_xml | b64encode }}"
 
     - name: Create DAP Record JSON Entry
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       set_fact:
         dap_record:
           - dapRecordName: "{{ dynamic_access_record_name }}"
@@ -409,18 +413,18 @@
             priority: 3
 
     - name: Append New DAP Records JSON
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       set_fact:
         dap_auth_attributes: "{{ dynamic_access_policy[0].authorizationAttributes + dap_record }}"
 
     - name: Print Dynamic Access Authorization Attributes
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       ansible.builtin.debug:
         msg:
           - "{{ dap_auth_attributes }}"
 
     - name: Update Dynamic Access Policy
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       cisco.fmcansible.fmc_configuration:
         operation: updateDynamicAccessPolicy
         path_params:
@@ -435,13 +439,13 @@
         register_as: dap
 
     - name: Print Dynamic Access Policy
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_realm
       ansible.builtin.debug:
         msg:
           - "{{ dap }}"
 
     - name: Print Dynamic Access Policy
-      when: dynamic_access_record_exists != []
+      when: dynamic_access_record_exists != [] and use_realm
       ansible.builtin.debug:
         msg:
           - "{{ dynamic_access_policy }}"
@@ -470,8 +474,9 @@
           - "RA VPN ID: {{ ra_vpn_id }}"
           - "Pool Name: {{ pool_name }}"
           - "Pool Id: {{ pool_id }}"
-          - "Realm Name: {{ realm_name }}"
-          - "Realm Id: {{ realm_id }}"
+          - "AAA Name: {{ aaa_name }}"
+          - "AAA Type: {{ aaa_type }}"
+          - "AAA Id: {{ aaa_id }}"
           - "Connection Profile Alias: {{ connection_profile_alias }}"
           - "Group URL Name: {{ connection_profile_url }}"
           - "Group URL ID: {{ vpn_url_id }}"

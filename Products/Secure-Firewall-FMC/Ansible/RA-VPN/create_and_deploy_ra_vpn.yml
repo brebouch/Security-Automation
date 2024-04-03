@@ -400,7 +400,13 @@
           - "{{ cert_enrollment_name }}"
           - "{{ cert_enrollment_id }}"
 
+    - name: Set Use DAP and Use LDAP Map Booleans
+      set_fact:
+        use_dap: "{{ use_dap|bool }}"
+        use_ldap_map: "{{ use_ldap_map|bool }}"
+
     - name: Get Dynamic Access Policies
+      when: use_dap
       cisco.fmcansible.fmc_configuration:
         operation: getAllDynamicAccessPolicy
         path_params:
@@ -410,34 +416,50 @@
         register_as: dynamic_access_policies
 
     - name: Extract Dynamic Access Policies
+      when: use_dap
       set_fact:
         dynamic_access_policy: "{{ dynamic_access_policies | json_query(policy_query) }}"
       vars:
         policy_query: "@[?name==`{{ dynamic_access_policy_name }}`]"
 
     - name: Check for Existing Record
+      when: use_dap
       set_fact:
         dynamic_access_record_exists: "{{ dynamic_access_policy[0].authorizationAttributes | json_query(record_query) }}"
       vars:
         record_query: "@[?dapRecordName==`{{ dynamic_access_record_name }}`]"
 
+    - name: Set default dap exists object if not using dap
+      when: not use_dap
+      set_fact:
+        dynamic_access_record_exists: []
+
+
+    - name: Update DAP Variable
+      when: dynamic_access_record_exists != [] and use_dap
+      set_fact:
+        dap: "{{ dynamic_access_policy[0] }}"
+
     - name: Print Dynamic Access Policy Record Info
+      when: dynamic_access_record_exists and use_dap
       ansible.builtin.debug:
         msg:
-          - "{{ dynamic_access_policy }}"
+          - "{{ dap }}"
           - "{{ dynamic_access_record_exists }}"
 
     - name: Extract Dynamic Access Record XML
+      when: dynamic_access_record_exists == [] and use_dap
       set_fact:
-        dynamic_access_record_xml: "{{ dynamic_access_policy[0].dapXmlConfig | b64decode }}"
+        dynamic_access_record_xml: "{{ dap.dapXmlConfig | b64decode }}"
 
     - name: Print Dynamic Access Policy Record XML
+      when: use_dap
       ansible.builtin.debug:
         msg:
           - "{{ dynamic_access_record_xml }}"
 
     - name: Add XML Record
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       xml:
         xmlstring: "{{ dynamic_access_record_xml }}"
         xpath: /dapRecordList
@@ -448,23 +470,23 @@
       register: updated_xml
 
     - name: Read Updated Dynamic Access Record XML
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       set_fact:
         dap_record_xml: "{{ updated_xml.xmlstring | replace('\t', '  ') }}"
 
     - name: Print Dynamic Access Record XML
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       ansible.builtin.debug:
         msg:
           - "{{ dap_record_xml }}"
 
     - name: Base64 Encode Dynamic Access Record XML
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       set_fact:
         dynamic_access_record_b64: "{{ dap_record_xml | b64encode }}"
 
     - name: Create DAP Record JSON Entry
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       set_fact:
         dap_record:
           - dapRecordName: "{{ dynamic_access_record_name }}"
@@ -472,42 +494,47 @@
             priority: 3
 
     - name: Append New DAP Records JSON
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       set_fact:
-        dap_auth_attributes: "{{ dynamic_access_policy[0].authorizationAttributes + dap_record }}"
+        dap_auth_attributes: "{{ dap.authorizationAttributes + dap_record }}"
 
     - name: Print Dynamic Access Authorization Attributes
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       ansible.builtin.debug:
         msg:
           - "{{ dap_auth_attributes }}"
 
     - name: Update Dynamic Access Policy
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       cisco.fmcansible.fmc_configuration:
         operation: updateDynamicAccessPolicy
         path_params:
           domainUUID: '{{ domain[0].uuid }}'
-          objectId: '{{ dynamic_access_policy[0].id }}'
+          objectId: '{{ dap.id }}'
         data:
-          name: '{{ dynamic_access_policy[0].name }}'
+          name: '{{ dap.name }}'
           type: "DynamicAccessPolicy"
-          hostscanXmlConfig: '{{ dynamic_access_policy[0].hostscanXmlConfig }}'
+          hostscanXmlConfig: '{{ dap.hostscanXmlConfig }}'
           authorizationAttributes: '{{ dap_auth_attributes }}'
           dapXmlConfig: '{{ dynamic_access_record_b64 }}'
         register_as: dap
 
     - name: Print Dynamic Access Policy
-      when: dynamic_access_record_exists == []
+      when: dynamic_access_record_exists == [] and use_dap
       ansible.builtin.debug:
         msg:
           - "{{ dap }}"
 
     - name: Print Dynamic Access Policy
-      when: dynamic_access_record_exists != []
+      when: dynamic_access_record_exists != [] and use_dap
       ansible.builtin.debug:
         msg:
           - "{{ dynamic_access_policy }}"
+
+    - name: Update DAP Variable
+      when: dynamic_access_record_exists != [] and use_dap
+      set_fact:
+          dap: "{{ dynamic_access_policy[0] }}"
 
     - name: Get Device
       cisco.fmcansible.fmc_configuration:
@@ -523,51 +550,40 @@
         msg:
           - "{{ ftd_device[0] }}"
 
-    - name: Get Device Sub-interfaces
+    - name: Get Security Zone
       cisco.fmcansible.fmc_configuration:
-        operation: getAllFTDSubInterface
+        operation: getAllSecurityZoneObject
         path_params:
           domainUUID: '{{ domain[0].uuid }}'
-          containerUUID: "{{ ftd_device[0].id }}"
-        query_params:
-          filter: 'name:{{ interface_name }}'
-          expanded: true
-        register_as: ftd_sub_interfaces
-
-    - name: Set Sub-interface ID Variable
-      set_fact:
-        sub_int_id: "{{ sub_interface }}"
+        register_as: security_zones
 
     - name: Extract Sub-interface Details
       set_fact:
-        ftd_sub_interface: "{{ ftd_sub_interfaces | json_query(query)|list }}"
+        security_zone: "{{ security_zones | json_query(query)|list }}"
       vars:
-        query: "@[?subIntfId==`{{ sub_interface|int }}`]"
+        query: "@[?name==`{{ security_zones }}`]"
 
-    - name: Print Subinterface
+    - name: Print Security Zone
       ansible.builtin.debug:
         msg:
-          - "{{ ftd_sub_interface[0] }}"
+          - "{{ security_zone }}"
 
     - name: Print Device
       ansible.builtin.debug:
         msg:
           - "{{ ftd_device[0] }}"
 
-    - name: Create RA VPN
-      cisco.fmcansible.fmc_configuration:
-        operation: createFTDRAVpnModel
-        path_params:
-          domainUUID: '{{ domain[0].uuid }}'
-        data:
+    - name: Set RAVPN Data
+      set_fact:
+        ra_vpn_data:
           name: "{{ ra_vpn_name }}"
           accessInterfaceSettings:
             bypassACPolicyForDecryptTraffic: false
             interfaceSettings:
               - accessInterface:
-                  name: "{{ interface_name }}"
-                  id: "{{ ftd_sub_interface[0].id }}"
-                  type: "SubInterface"
+                  name: "dmz"
+                  id: "2c932478-572a-11ee-bc3e-b4de4d128641"
+                  type: "SecurityZone"
                 configureInterfaceIDCertificate: false
                 enableSSL: true
                 enableIPSecIkev2: false
@@ -592,10 +608,24 @@
                 type: "AnyConnectPackage"
           addressAssignmentSettings: null
           configureSSL: true
-          dapPolicy:
-            name: "{{ dynamic_access_policy_name }}"
-            id: "{{ dynamic_access_policy.id }}"
-            type: "{{ dynamic_access_policy.type }}"
+          dapPolicy: {}
+
+    - name: Update DAP if needed
+      when: use_dap
+      ansible.utils.update_fact:
+        updates:
+          - path: ra_vpn_data.dapPolicy
+            values:
+                name: "{{ dynamic_access_policy_name }}"
+                id: "{{ dap.id }}"
+                type: "{{ dap.type }}"
+
+    - name: Create RA VPN
+      cisco.fmcansible.fmc_configuration:
+        operation: createFTDRAVpnModel
+        path_params:
+          domainUUID: '{{ domain[0].uuid }}'
+        data: "{{ ra_vpn_data }}"
         register_as: ra_vpn
 
     - name: Print RA VPN
@@ -618,6 +648,7 @@
           - "{{ ldap_attribute_map_id }}"
 
     - name: Update RA VPN LDAP Attribute Maps
+      when: use_ldap_map
       cisco.fmcansible.fmc_configuration:
         operation: updateFTDRAVpnLDAPAttributeModel
         path_params:

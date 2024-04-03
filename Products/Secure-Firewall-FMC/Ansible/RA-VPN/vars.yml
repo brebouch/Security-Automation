@@ -6,8 +6,10 @@ ra_vpn_connection_profile_name: "CUST_ACCESS_PROFILE"
 connection_profile_alias: "CUST-ALIAS"
 connection_profile_url: "CUST-URL.name"
 ra_vpn_cert_enrollment: "VPN-Cert"
+use_ldap_map: false
 ldap_map_cisco_attribute_name: "CUST_VPN"
 ldap_map_ldap_value: "DC=dcloud,DC=local"
+use_dap: false
 dynamic_access_policy_name: "CAOC-DAP"
 dynamic_access_record_name: "CUST_DAP_RECORD4"
 dynamic_access_ldap_group: "Employee"
