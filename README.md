@@ -46,4 +46,4 @@ README file describing the API's capabilities.
 3. From Postman click the import button
 4. Paste in the URL captured in step 2 and hit enter
 
-![Import Collection](Assets/Postman Collection Import.png)
+![Import Collection](Assets/postman_collection_import.png)
