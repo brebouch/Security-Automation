@@ -1,7 +1,7 @@
 # Cisco Security Automation Resources
 
 This project is intended to be a single source of all Cisco Security 
-API resources.
+API resources. It is still very much a work in progress, any contributions or feedback will be appreciated.
 
 ## Postman Workspace
 
